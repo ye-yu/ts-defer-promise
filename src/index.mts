@@ -2,12 +2,6 @@ import {AsyncLocalStorage} from 'node:async_hooks';
 
 const deferStorage = new AsyncLocalStorage<Function[]>()
 
-Promise.prototype.defer = function (this) {
-  const functions = deferStorage.getStore();
-  if (!functions) return this;
-  return this.finally(() => Promise.all(functions.map(e => e())));
-}
-
 function defer(fn: Function) {
   const functions = deferStorage.getStore();
   if (!functions) {
@@ -19,7 +13,11 @@ function defer(fn: Function) {
 function useDefer<T>(fn: () => Promise<T>): Promise<T> {
   let promiseValue: Promise<T> | null = null;
   deferStorage.run([], () => {
-    promiseValue = fn().defer()
+    promiseValue = fn().finally(() => {
+      const functions = deferStorage.getStore();
+      if (!functions) return;
+      return Promise.all(functions.map(e => e())).then(e => e?.find(e => e) ?? void 0);
+    })
   })
 
   return promiseValue!
@@ -45,4 +43,3 @@ async function deferTest2() {
 
 useDefer(deferTest)
 useDefer(deferTest2)
-
