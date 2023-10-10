@@ -4,7 +4,9 @@ This is a simple Proof of Concept (POC) for implementing a `defer` function in J
 
 ## Usage
 
-To use the `defer` functionality, you need to import the `AsyncLocalStorage` module from 'node:async_hooks' and create an instance of it called `deferStorage`. Then, you can use the `defer` and `useDefer` functions in your code as demonstrated below:
+To use the `defer` functionality, you need to import the `AsyncLocalStorage` module from 'node:async_hooks' and create an instance of it called `deferStorage`. (See [index.mts](src/index.mts))
+
+Then, you can use the `defer` and `useDefer` functions in your code as demonstrated below:
 
 ```typescript
 // Sample usage of defer and useDefer functions
